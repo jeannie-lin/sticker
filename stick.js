@@ -1,22 +1,21 @@
 $(document).ready(function(){
 	var fall = function(opts){
 		var options = $.extend({
-				width : 220,
-				margin : 190,
-				offsetY : 15,
-				offsetX : 20,
-				delay : 0,
-				align : 'center',
 				container : '#main',
+				top: 145,
+				bottom : 45,
+
 				owner : '.stick',
-				adder : '#new',
-				deler : '.close',
+				width : 220,
+				offsetX : 20,
+				offsetY : 15,
+
 				nrow : 0,
 				ncol : 0,
-				conHeight : 0,
 				count : 0,
 				timer : []
-			},opts)
+
+			},opts);
 
 		function date() {
 			var time = new Date();
@@ -61,7 +60,7 @@ $(document).ready(function(){
 		function conHeight() {
 			var start = options.nrow * options.ncol;
 			var count = options.count % options.ncol + 1;
-			var heights = [parseInt($('body').height())-options.margin];
+			var heights = [parseInt($('body').height())-options.top - options.bottom];
 			var owner = $(options.owner);
 			var container = $(options.container);
 			var current;
@@ -79,7 +78,52 @@ $(document).ready(function(){
 			return options.ncol  * (options.width+options.offsetX) + options.offsetX;
 		}
 
+		function bindEvents(){
+			$(options.container).delegate('#new','click',function(){
+				var idx = $(this).index();
+				$(this).before('<div class="stick"><p class="display"></p> \
+				<p class="time">--'+date()+'</p> \
+				<p class="close">X</p></div>');
+
+				$(options.owner).eq(idx).css({'background-color':color()});
+				options.nrow = Math.floor(idx/options.ncol);
+				options.count += 1;
+				repaint(idx);
+				options.nrow = Math.floor((idx+1)/options.ncol);
+				repaint(idx+1);
+
+			}).delegate('.display','click',function(){
+				var val = $(this).html().replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+				$(this).after('<textarea id="edit" class="edit"></textarea>').siblings('#edit').val(val).focus().end().hide()
+
+			}).delegate('.edit','focus',function(){
+				$(this).trigger('height');
+			}).delegate('.edit','input',function(){
+				$(this).trigger('height');
+			}).delegate('.edit','change',function(){
+
+			}).delegate('.edit','blur',function(){
+				var val = $(this).val().replace(/</g,'&lt;').replace(/>/g,'&gt;');
+				var idx = $(this.parentNode).index();
+
+				$(this).siblings('.display').html(val).show().end().remove();
+				layout(function(index){
+					return index > idx && (idx % options.ncol === index % options.ncol);
+				})
+
+			}).delegate('.edit','height',function(){
+				$(this).css('height',this.scrollHeight +'px');
+
+			}).delegate('.close','click',function(){
+				var idx = $(this.parentNode).index();
+				$(options.owner).eq(idx).remove();
+				options.count -= 1;
+				$(options.container).hasClass('scroll') ? reset():!$(options.container).hasClass('random') && layout(function(index){return index > idx-1});
+			})
+		}
+
 		function init() {
+			$('<div class="stick new" id="new"></div>').appendTo(options.container);
 			options.ncol = Math.floor($('body').width() / (options.width + options.offsetX));
 			options.nrow = 0;
 			repaint(0);
@@ -90,56 +134,6 @@ $(document).ready(function(){
 				clearInterval(v);
 			})
 			options.timer = [];
-		}
-
-		function add(idx) {
-			$(options.adder).before('<div class="stick"><p class="display"></p> \
-				<p class="time">--'+date()+'</p> \
-				<p class="close">X</p></div>');
-
-			$(options.owner).eq(idx).css(
-					{'background-color':color()}
-				).find(options.deler).click(
-					function(){
-						var idx = $(this.parentNode).index();
-						$(options.owner).eq(idx).remove();
-						options.count -= 1;
-						$(options.container).hasClass('scroll') ? reset():!$(options.container).hasClass('random') && layout(function(index){return index > idx-1});
-
-					}).end().find('.display').bind('click',function(){
-						var val = $(this).html().replace(/&lt;/g,'<').replace(/&gt;/g,'>');
-						$(this).after('<textarea id="edit" class="edit"></textarea>').siblings('#edit').bind({
-							'focus':function(){
-								$(this).trigger('height');
-							},
-							'height':function(){
-								console.info($(this).css('rows'))
-								$(this).css('height',this.scrollHeight +'px');
-							},
-							'input':function(){
-								$(this).trigger('height');
-							},
-							'change':function(){
-								
-							},
-							'blur':function(){
-								var val = $(this).val().replace(/</g,'&lt;').replace(/>/g,'&gt;');
-								var idx = $(this.parentNode).index();
-
-								$(this).siblings('.display').html(val).show().end().remove();
-								layout(function(index){
-									return index > idx && (idx % options.ncol === index % options.ncol);
-								})
-
-							}
-						}).val(val).focus().end().hide();
-					})
-
-			options.nrow = Math.floor(idx/options.ncol);
-			options.count += 1;
-			repaint(idx);
-			options.nrow = Math.floor((idx+1)/options.ncol);
-			repaint(idx+1);
 		}
 
 		function repaint(idx) {
@@ -308,10 +302,10 @@ $(document).ready(function(){
 		}
 
 		init();
+		bindEvents();
 
 		return {
 			layout: layout,
-			add : add,
 			reset: reset,
 			rotate : rotate,
 			random :onRandom,
@@ -322,7 +316,7 @@ $(document).ready(function(){
 
 	}();
 
-	$('#new').click(function(){fall.add($(this).index());});
+	//$('#new').click(function(){fall.add($(this).index());});
 	$('#rotate').click(fall.rotate);
 	$('#reset').click(fall.reset);
 	$('#random').click(fall.random);
