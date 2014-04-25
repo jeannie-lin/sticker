@@ -13,9 +13,12 @@ $(document).ready(function(){
 				nrow : 0,
 				ncol : 0,
 				count : 0,
-				timer : []
+				timer : [],
+
+				isie: /trident/.test(navigator.userAgent.toLowerCase()),
 
 			},opts);
+
 
 		function date() {
 			var time = new Date();
@@ -79,7 +82,32 @@ $(document).ready(function(){
 		}
 
 		function bindEvents(){
+			$(document).delegate('.circle .stick','click',function(){
+				var deg = -360.0/(options.count+1) * $(this).index();
+				var ori = 360.0/(options.count+1);
+				var scl = 10.0/(options.count+1);
+				var tra,top;
+
+				scl != 1 && (scl *= 0.6)
+				tra = (options.width+options.offsetX)/2/Math.tan(ori/360 * Math.PI);
+
+				top = 130  + 60* scl;
+
+				if (options.isie) {
+					$('.circle').find('.stick').each(function(){
+						var idx = $(this).index();
+						$(this).transform('rotateY',idx*ori + deg + 'deg').transform('scale',scl+'',scl+'').transform('translateZ',tra + 'px')
+					})
+				} else {
+					$('.circle').transform('rotateY',deg + 'deg');
+				}
+			})
+
 			$(options.container).delegate('#new','click',function(){
+				if ($(options.container).hasClass('scroll') || $('.circle').length) {
+					return;
+				}
+
 				var idx = $(this).index();
 				$(this).before('<div class="stick"><p class="display"></p> \
 				<p class="time">--'+date()+'</p> \
@@ -93,11 +121,22 @@ $(document).ready(function(){
 				repaint(idx+1);
 
 			}).delegate('.display','click',function(){
+				if ($(options.container).hasClass('scroll') || $('.circle').length) {
+					return;
+				}
+
 				var val = $(this).html().replace(/&lt;/g,'<').replace(/&gt;/g,'>');
-				$(this).after('<textarea id="edit" class="edit"></textarea>').siblings('#edit').val(val).focus().end().hide()
+				$(this).after('<textarea id="edit" class="edit"></textarea>').hide().siblings('#edit').val(val).focus().end()
 
 			}).delegate('.edit','focus',function(){
 				$(this).trigger('height');
+				if(this.createTextRange) {
+					var txt = this.createTextRange();
+					txt.moveStart('character',this.value.length);
+					txt.select();
+				} else {
+					this.selectionStart = this.value.length;
+				}
 			}).delegate('.edit','input',function(){
 				$(this).trigger('height');
 			}).delegate('.edit','change',function(){
@@ -112,7 +151,7 @@ $(document).ready(function(){
 				})
 
 			}).delegate('.edit','height',function(){
-				$(this).css('height',this.scrollHeight +'px');
+				$(this).height(this.scrollHeight)
 
 			}).delegate('.close','click',function(){
 				var idx = $(this.parentNode).index();
@@ -139,6 +178,11 @@ $(document).ready(function(){
 		function repaint(idx) {
 			$(options.owner).eq(idx).css({'top':top(idx)+'px','left':left(idx)+'px'});
 			$(options.container).css({height:conHeight()+'px',width:conWidth()+'px'});
+
+			if ($(options.container).hasClass('book')) {
+				var col = (idx % options.ncol) % 2;
+				$(options.owner).eq(idx).transform('skewY',col == 0 ? '-35deg':'35deg')
+			}
 		}
 
 		function layout(filter) {
@@ -152,40 +196,73 @@ $(document).ready(function(){
 			})
 		}
 
+		function removeCircle() {
+			if ($('.circle').length) {
+				$('.stick').transform('translateZ','none').transform('rotateY','none').unwrap();
+			}
+		}
+
 		function reset() {
-			clearTimer()
-			$(options.container).removeClass('circle book scroll random rotate');
+			clearTimer();
+			removeCircle();
+			$(options.container).removeClass('circle book scroll random')
 			$(options.owner).transform('none')
 			layout();
 		}
 
 		function onRandom() {
-			clearTimer()
-			$(options.container).addClass('random')
-			$(options.owner).each(function(){
+			clearTimer();
+			removeCircle();
+			$(options.container).removeClass('book scroll').addClass('random')
+			$(options.owner).transform('skewY','none').each(function(){
 				var p = $(this.parentNode);
-				$(this).css({left:random(p.width()-$(this).width()-options.offsetX,1),top:random(p.height()-$(this).height()-options.offsetY,1)});
+				$(this).css({
+					left:random(p.width()-$(this).width()-options.offsetX,1),
+					top:random(p.height()-$(this).height()-options.offsetY,1)
+				});
 			})
 		}
 
 		function rotate() {
-			clearTimer()
-			$(options.container).addClass('rotate')
-			$(options.owner).each(function(){
-				$(this).transform('rotate',random(35)+'deg')
+			if ($('.circle').length) {
+				reset()
+			} else {
+				clearTimer();
+				removeCircle();
+				$(options.container).removeClass('book scroll')
+			}
+			
+			$(options.owner).transform('skewY','none').each(function(){
+				$(this).transform('rotate',random(32)+'deg')
 			})
 		}
 
 		function circle() {
-			clearTimer()
-			$(options.container).removeClass('book scroll random rotate').addClass('circle');
-			$(options.owner).transform('none')
+			var deg = 360.0/(options.count+1);
+			var scl = 10.0/(options.count+1);
+			var tra,top;
+
+			scl != 1 && (scl *= 0.6)
+			tra = (options.width+options.offsetX)/2/Math.tan(deg/360 * Math.PI);
+
+			top = 130  + 60* scl;
+
+			clearTimer();
+			$(options.container).removeClass('book scroll random').find('.circle').css('top',top+'px');
+			$('.circle').length || $(options.container).wrapInner('<div class="circle"></div>')
+			$(options.owner).css({top:'0',left:'0'}).transform('none').each(function(){
+				var idx = $(this).index();
+				if(options.isie) {$(this).transform('perspective','1000px')}
+				$(this).transform('rotateY',idx*deg + 'deg')}).transform('scale',scl+'',scl+'').transform('translateZ',tra + 'px')
 		}
 
 		function book() {
-			clearTimer()
-			$(options.container).removeClass('circle scroll random rotate').addClass('book');
-			$(options.owner).transform('none')
+			reset();
+			$(options.container).addClass('book').find(options.owner).each(function(){
+				var col = ($(this).index() % options.ncol) % 2;
+				$(this).transform('skewY',col == 0 ? '-35deg':'35deg')
+			});
+
 		}
 
 		function scroll() {
@@ -199,6 +276,9 @@ $(document).ready(function(){
 			$(options.container).addClass('scroll');
 
 			for(var i=0;i<options.ncol;i++) {
+				if (i >= options.count - 1)
+					break;
+
 				t = setInterval(function(i,up) {
 					return function() {
 						slide(i,up)
@@ -311,12 +391,12 @@ $(document).ready(function(){
 			random :onRandom,
 			book : book,
 			scroll : scroll,
+			circle : circle,
 			shake : shake
 		}
 
 	}();
 
-	//$('#new').click(function(){fall.add($(this).index());});
 	$('#rotate').click(fall.rotate);
 	$('#reset').click(fall.reset);
 	$('#random').click(fall.random);
@@ -326,6 +406,7 @@ $(document).ready(function(){
 	$('#scroll').click(fall.scroll);
 
 	window.onresize = function() {
-		fall.layout();
+		if (!$('#main .circle').length)
+			fall.layout();
 	};
 })
