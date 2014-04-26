@@ -1,8 +1,9 @@
 $(document).ready(function(){
 	var fall = function(opts){
 		var options = $.extend({
-				container : '#main',
-				top: 145,
+				stage : '#stage',
+				container : '#container',
+				top: 164,
 				bottom : 45,
 
 				owner : '.stick',
@@ -104,7 +105,7 @@ $(document).ready(function(){
 			})
 
 			$(options.container).delegate('#new','click',function(){
-				if ($(options.container).hasClass('scroll') || $('.circle').length) {
+				if ($(options.container).hasClass('scroll') ||  $(options.container).hasClass('circle')) {
 					return;
 				}
 
@@ -121,7 +122,7 @@ $(document).ready(function(){
 				repaint(idx+1);
 
 			}).delegate('.display','click',function(){
-				if ($(options.container).hasClass('scroll') || $('.circle').length) {
+				if ($(options.container).hasClass('scroll') || $(options.container).hasClass('circle')) {
 					return;
 				}
 
@@ -177,7 +178,7 @@ $(document).ready(function(){
 
 		function repaint(idx) {
 			$(options.owner).eq(idx).css({'top':top(idx)+'px','left':left(idx)+'px'});
-			$(options.container).css({height:conHeight()+'px',width:conWidth()+'px'});
+			$(options.stage).css({height:conHeight()+'px',width:conWidth()+'px'});
 
 			if ($(options.container).hasClass('book')) {
 				var col = (idx % options.ncol) % 2;
@@ -197,9 +198,7 @@ $(document).ready(function(){
 		}
 
 		function removeCircle() {
-			if ($('.circle').length) {
-				$('.stick').transform('translateZ','none').transform('rotateY','none').unwrap();
-			}
+			$(options.container).removeClass('circle').transform('translateZ','none').transform('rotateY','none')
 		}
 
 		function reset() {
@@ -215,7 +214,7 @@ $(document).ready(function(){
 			removeCircle();
 			$(options.container).removeClass('book scroll').addClass('random')
 			$(options.owner).transform('skewY','none').each(function(){
-				var p = $(this.parentNode);
+				var p = $(options.stage);
 				$(this).css({
 					left:random(p.width()-$(this).width()-options.offsetX,1),
 					top:random(p.height()-$(this).height()-options.offsetY,1)
@@ -239,17 +238,17 @@ $(document).ready(function(){
 
 		function circle() {
 			var deg = 360.0/(options.count+1);
-			var scl = 10.0/(options.count+1);
-			var tra,top;
+			var tra,scl,w;
 
-			scl != 1 && (scl *= 0.6)
-			tra = (options.width+options.offsetX)/2/Math.tan(deg/360 * Math.PI);
-
-			top = 130  + 60* scl;
+			w = $(document).width();
+			tra = (options.width)/2/Math.tan(deg/360 * Math.PI);
+			tra >0 && (scl=w/3.5/(tra)) || (tra = 0,scl=1.5);
+			scl > 1.6 && (scl = 1.5)
+			tra = tra * scl + 30;
 
 			clearTimer();
-			$(options.container).removeClass('book scroll random').find('.circle').css('top',top+'px');
-			$('.circle').length || $(options.container).wrapInner('<div class="circle"></div>')
+			$(options.stage).css({height:0,width:w});
+			$(options.container).removeClass('book scroll random').addClass('circle');
 			$(options.owner).css({top:'0',left:'0'}).transform('none').each(function(){
 				var idx = $(this).index();
 				if(options.isie) {$(this).transform('perspective','1000px')}
@@ -406,7 +405,11 @@ $(document).ready(function(){
 	$('#scroll').click(fall.scroll);
 
 	window.onresize = function() {
-		if (!$('#main .circle').length)
+		if (!$('#container').hasClass('circle')) {
 			fall.layout();
+		} else {
+			fall.circle();
+		}
+			
 	};
 })
