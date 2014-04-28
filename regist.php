@@ -27,10 +27,10 @@
 			<!--form id="regist" name="regist" action="regist.php" method="post"-->
 				<fieldset>
 					<label class="label" for="username">Username:</label>
-					<input class="text" id="username" name="username" type="text" autofocus>
+					<input class="text" id="username" name="username" type="text" maxlength="30" autofocus>
 					<span class="tip" id="nm-tip">4-30 charecters:a-z,A-Z,-,0-9!</span>
-					<label class="label" for="password">Password :</label>
-					<input class="text" id="password" name="password" type="password">
+					<label class="label" for="password">Password:</label>
+					<input class="text" id="password" name="password" type="password" maxlength="30">
 					<span class="tip" id="pwd-tip">4-30 charecters!</span>
 					<span class="btns">
 						<input class="btn" id="regist" name="regist" type="button" value="Regist">
