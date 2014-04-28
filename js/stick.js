@@ -16,8 +16,6 @@ $(document).ready(function(){
 				count : 0,
 				timer : [],
 
-				isie: /trident/.test(navigator.userAgent.toLowerCase()),
-
 			},opts);
 
 
@@ -71,7 +69,7 @@ $(document).ready(function(){
 
 			for(var i=0;i<count;i++) {
 				current = owner.get(start+i);
-				current && heights.push(parseInt(current.style.top)+current.clientHeight + options.offsetY)
+				current && heights.push(parseInt(current.style.top)+current.clientHeight + options.offsetY);
 			}
 
 			owner = container = current = null;
@@ -85,23 +83,8 @@ $(document).ready(function(){
 		function bindEvents(){
 			$(document).delegate('.circle .stick','click',function(){
 				var deg = -360.0/(options.count+1) * $(this).index();
-				var ori = 360.0/(options.count+1);
-				var scl = 10.0/(options.count+1);
-				var tra,top;
+				$('.circle').transform('rotateY',deg + 'deg');
 
-				scl != 1 && (scl *= 0.6)
-				tra = (options.width+options.offsetX)/2/Math.tan(ori/360 * Math.PI);
-
-				top = 130  + 60* scl;
-
-				if (options.isie) {
-					$('.circle').find('.stick').each(function(){
-						var idx = $(this).index();
-						$(this).transform('rotateY',idx*ori + deg + 'deg').transform('scale',scl+'',scl+'').transform('translateZ',tra + 'px')
-					})
-				} else {
-					$('.circle').transform('rotateY',deg + 'deg');
-				}
 			})
 
 			$(options.container).delegate('#new','click',function(){
@@ -111,7 +94,7 @@ $(document).ready(function(){
 
 				var idx = $(this).index();
 				$(this).before('<div class="stick"><p class="display"></p> \
-				<p class="time">--'+date()+'</p> \
+				<p class="date">--'+date()+'</p> \
 				<p class="close">X</p></div>');
 
 				$(options.owner).eq(idx).css({'background-color':color()});
@@ -141,32 +124,79 @@ $(document).ready(function(){
 			}).delegate('.edit','input',function(){
 				$(this).trigger('height');
 			}).delegate('.edit','change',function(){
+				var p = $(this.parentNode);
+				$.ajax({
+					url:'update.php',
+					type:'post',
+					dataType:'json',
+					data:{data:$(this).val(),date:date(),id:p.attr('data-id')},
+				}).done(function(data){
+					p.attr('data-id',data.id);
+					$(this).val(data.data).siblings('.date').html('--'+data.date);
+				}).fail(function(data){
+					alert('failed to set!');
+				})
 
 			}).delegate('.edit','blur',function(){
 				var val = $(this).val().replace(/</g,'&lt;').replace(/>/g,'&gt;');
 				var idx = $(this.parentNode).index();
 
 				$(this).siblings('.display').html(val).show().end().remove();
-				layout(function(index){
-					return index > idx && (idx % options.ncol === index % options.ncol);
+				!$(options.container).hasClass('random') && layout(function(index){
+					return index >= idx && (idx % options.ncol === index % options.ncol);
 				})
 
 			}).delegate('.edit','height',function(){
 				$(this).height(this.scrollHeight)
 
 			}).delegate('.close','click',function(){
-				var idx = $(this.parentNode).index();
-				$(options.owner).eq(idx).remove();
-				options.count -= 1;
-				$(options.container).hasClass('scroll') ? reset():!$(options.container).hasClass('random') && layout(function(index){return index > idx-1});
+				var p = $(this.parentNode);
+				var idx = p.index();
+
+				$.ajax({
+					url:'update.php',
+					type:'post',
+					dataType:'json',
+					data:{remove:true,id:p.attr('data-id')},
+				}).done(function(data){
+					$(options.owner).eq(idx).remove();
+					options.count -= 1;
+					!$(options.container).hasClass('random') && layout(function(index){return index > idx-1});
+					
+				}).fail(function(data){
+					alert('failed to remove!');
+				})
 			})
 		}
 
+		function insert(data,index){
+			var html = '';
+			var index = index || 0;
+
+			html += '<div class="stick" data-id="'+data.id+'"><p class="display">'+data.data+'</p> \
+						<p class="date">--'+data.date+'</p> \
+						<p class="close">X</p></div>'
+			$(options.container).append(html);
+			$(options.owner).eq(index).css({'background-color':color()});
+		}
+
 		function init() {
-			$('<div class="stick new" id="new"></div>').appendTo(options.container);
-			options.ncol = Math.floor($('body').width() / (options.width + options.offsetX));
-			options.nrow = 0;
-			repaint(0);
+			$.ajax({
+				url:'load.php?',
+				type:'get',
+				dataType:'json'
+			}).done(function(data){
+				for(var i=0,l=data.length;i<l;i++){
+					insert(data[i],i);
+					options.count += 1;
+				}
+
+				$(options.container).append('<div class="stick new" id="new"></div>');
+				layout();
+			}).fail(function(data){
+				$(options.container).append('<div class="stick new" id="new"></div>');
+				layout();
+			})
 		}
 
 		function clearTimer() {
@@ -210,9 +240,14 @@ $(document).ready(function(){
 		}
 
 		function onRandom() {
-			clearTimer();
-			removeCircle();
-			$(options.container).removeClass('book scroll').addClass('random')
+			if ($('.circle').length) {
+				reset()
+			} else {
+				clearTimer();
+				removeCircle();
+				$(options.container).removeClass('book scroll')
+			}
+			$(options.container).addClass('random')
 			$(options.owner).transform('skewY','none').each(function(){
 				var p = $(options.stage);
 				$(this).css({
@@ -251,7 +286,6 @@ $(document).ready(function(){
 			$(options.container).removeClass('book scroll random').addClass('circle');
 			$(options.owner).css({top:'0',left:'0'}).transform('none').each(function(){
 				var idx = $(this).index();
-				if(options.isie) {$(this).transform('perspective','1000px')}
 				$(this).transform('rotateY',idx*deg + 'deg')}).transform('scale',scl+'',scl+'').transform('translateZ',tra + 'px')
 		}
 

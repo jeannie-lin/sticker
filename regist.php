@@ -24,11 +24,12 @@
 			</div>
 		</header>
 		<section class="content" id="content">
-			<!--form class="clearfix" name="login" action="login.php" method="post"-->
+			<!--form id="regist" name="regist" action="regist.php" method="post"-->
 				<fieldset>
+			
 					<div class="row">
 						<label class="label" for="username">Username:</label>
-						<input class="text" id="username" name="username" type="text" placeholder="any" autofocus>
+						<input class="text" id="username" name="username" type="text" autofocus>
 					</div>
 					<div class="row nm-tip" id="nm-tip">4-30 charecters:a-z,A-Z,-,0-9!</div>
 					<div class="row">
@@ -37,8 +38,8 @@
 					</div>
 					<div class="row pwd-tip" id="pwd-tip">4-30 charecters!</div>
 					<div class="row btns">
-						<input class="btn" id="login" name="login" type="button" value="Login">
-						<input class="btn" id="regist" name="regist" type="button" value="Regist" onclick="location.href='regist.php'">
+						<input class="btn" id="regist" name="regist" type="button" value="Regist">
+						<input class="btn" id="cancel" name="cancel" type="button" value="Cancel" onclick="location.href='login.php';">
 					</div>
 				</fieldset>
 			<!--/form-->
@@ -50,43 +51,13 @@
 <script src="js/jquery-1.11.0.js"></script>
 <script src="js/login.js"></script>
 <script>
-	$('#content').delegate('#login','click',function(){
-		$.ajax({
-			url:'check.php',
-			type : 'post',
-			dataType : 'json',
-			data:{'submit':true,
-					'key':'login',
-					'name':$('#username').val(),
-					'password':$('#password').val()
-				}
-		}).done(function(data){
-			if(data.match){
-				location.href = 'index.php';
-			} else {
-				if(data.name){
-					$('#nm-tip').html(data.name).css('color','red');
-					$('#pwd-tip').css('opacity','0');
-				} else {
-					$('#nm-tip').html('Valid name').css('color','green');
-					$('#pwd-tip').css('opacity','1');
-				}
-				if(data.password) {
-					$('#pwd-tip').html(data.password).css('color','red');
-				} else {
-					$('#pwd-tip').html('Valid password').css('color','green');
-				}
-			}
-		}).fail(function(data){
-			alert('Can not check data from ajax!');
-		})
-	}).delegate('#username','change',function(){
+	$('#content').delegate('#username','change',function(){
 		$.ajax({
 			url:'check.php',
 			type : 'post',
 			dataType : 'json',
 			data:{
-					'key':'login',
+					'key':'regist',
 					'name':$('#username').val()
 				}
 		}).done(function(data){
@@ -119,7 +90,37 @@
 		}).fail(function(data){
 			alert('Can not check data from ajax!');
 		})
-	})
+	}).delegate('#regist','click',function(){
+		$.ajax({
+			url:'check.php',
+			type : 'post',
+			dataType : 'json',
+			data:{'submit':true,
+					'key':'regist',
+					'name':$('#username').val(),
+					'password':$('#password').val()
+				}
+		}).done(function(data){
+			if(data.match){
+				location.href = 'index.php';
+			} else {
+				if(data.name){
+					$('#nm-tip').html(data.name).css('color','red');
+					$('#pwd-tip').css('opacity','0');
+				} else {
+					$('#nm-tip').html('Valid name').css('color','green');
+					$('#pwd-tip').css('opacity','1');
+				}
+				if(data.password) {
+					$('#pwd-tip').html(data.password).css('color','red');
+				} else {
+					$('#pwd-tip').html('Valid password').css('color','green');
+				}
+			}
+		}).fail(function(data){
+			alert('Can not check data from ajax!');
+		})
+	});
 </script>
 </body>
 </html>

@@ -1,3 +1,11 @@
+<?php
+	require_once('commen.php');
+
+	session_start();
+	if(!isset($_SESSION['name'])){
+		header("Location: login.php");
+	}
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -29,6 +37,10 @@
 			</div>
 		</div>
 	</section>
+	<aside>
+		<a href="#">顶部</a>
+		<a href="logout.php">注销</a>
+	</aside>
 	<footer>
 		copyright <time datetime="2014.4">2014</time>
 	</footer>

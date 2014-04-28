@@ -1,5 +1,26 @@
 @charset "utf-8";
 
+header {padding:20px 40px;}
+aside {
+	position:fixed;
+	right:15px;
+	bottom:20px;
+	width:60px;
+	z-index:3;
+}
+aside a {
+	display:inline-block;
+	width:60px;
+	height:60px;
+	margin-top:3px;
+	line-height:60px;
+	text-decoration: none;
+	font-size:24px;
+	font-weight:bold;
+	color:#888;
+	background:#CCC;
+	opacity:0.35;
+}
 .menu li:hover {
 	-webkit-transform:rotate(-35deg) scale(1.2);
 	   -moz-transform:rotate(-35deg) scale(1.2);
@@ -135,7 +156,7 @@
 }
 @-moz-document url-prefix(){.stick .edit {margin-left:-1px;}}
 
-.stick .time {
+.stick .date {
 	height:50px;
 	font-size:20px;
 	line-height:70px;
