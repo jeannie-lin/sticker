@@ -26,21 +26,16 @@
 		<section class="content" id="content">
 			<!--form id="regist" name="regist" action="regist.php" method="post"-->
 				<fieldset>
-			
-					<div class="row">
-						<label class="label" for="username">Username:</label>
-						<input class="text" id="username" name="username" type="text" autofocus>
-					</div>
-					<div class="row nm-tip" id="nm-tip">4-30 charecters:a-z,A-Z,-,0-9!</div>
-					<div class="row">
-						<label class="label" for="password">Password :</label>
-						<input class="text" id="password" name="password" type="password">
-					</div>
-					<div class="row pwd-tip" id="pwd-tip">4-30 charecters!</div>
-					<div class="row btns">
+					<label class="label" for="username">Username:</label>
+					<input class="text" id="username" name="username" type="text" autofocus>
+					<span class="tip" id="nm-tip">4-30 charecters:a-z,A-Z,-,0-9!</span>
+					<label class="label" for="password">Password :</label>
+					<input class="text" id="password" name="password" type="password">
+					<span class="tip" id="pwd-tip">4-30 charecters!</span>
+					<span class="btns">
 						<input class="btn" id="regist" name="regist" type="button" value="Regist">
 						<input class="btn" id="cancel" name="cancel" type="button" value="Cancel" onclick="location.href='login.php';">
-					</div>
+					</span>
 				</fieldset>
 			<!--/form-->
 		</section>
