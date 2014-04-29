@@ -80,7 +80,7 @@ aside a {
 	text-align: left;
 	background:#EEAAAA;
 	box-shadow:3px 3px 10px rgba(0,0,0,0.3);
-	transition:all .3s;
+	transition:all .5s;
 }
 .stick:hover {z-index:1;}
 .stick .close {

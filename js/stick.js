@@ -228,7 +228,7 @@ $(document).ready(function(){
 		}
 
 		function removeCircle() {
-			$(options.container).removeClass('circle').transform('translateZ','none').transform('rotateY','none')
+			$(options.container).removeClass('circle').transform('translate3d','none').transform('rotateY','none')
 		}
 
 		function reset() {
@@ -286,7 +286,7 @@ $(document).ready(function(){
 			$(options.container).removeClass('book scroll random').addClass('circle');
 			$(options.owner).css({top:'0',left:'0'}).transform('none').each(function(){
 				var idx = $(this).index();
-				$(this).transform('rotateY',idx*deg + 'deg')}).transform('scale',scl+'',scl+'').transform('translateZ',tra + 'px')
+				$(this).transform('rotateY',idx*deg + 'deg')}).transform('scale',scl+'',scl+'').transform('translate3d','0,0,'+tra + 'px')
 		}
 
 		function book() {
@@ -405,12 +405,12 @@ $(document).ready(function(){
 				for(var i=0;i<30;i++) {
 					setTimeout(function(){
 						$(this).transform('translate3d',random(50)+'px',random(50)+'px','0')
-					}.bind(this),i*50)
+					}.bind(this),i*80)
 				}
 
 				setTimeout(function(){
 					$(this).transform('translate3d','0','0','0')
-				}.bind(this),30*50)
+				}.bind(this),30*80)
 			})
 		}
 
