@@ -82,16 +82,12 @@ $(document).ready(function(){
 
 		function bindEvents(){
 			$(document).delegate('.circle .stick','click',function(){
-				var deg = -360.0/(options.count+1) * $(this).index();
+				var deg = -360.0/options.count * $(this).index();
 				$('.circle').transform('rotateY',deg + 'deg');
 
 			})
 
 			$(options.container).delegate('#new','click',function(){
-				if ($(options.container).hasClass('scroll') ||  $(options.container).hasClass('circle')) {
-					return;
-				}
-
 				var idx = $(this).index();
 				$(this).before('<div class="stick"><p class="display"></p> \
 				<p class="date">--'+date()+'</p> \
@@ -272,7 +268,7 @@ $(document).ready(function(){
 		}
 
 		function circle() {
-			var deg = 360.0/(options.count+1);
+			var deg = 360.0/options.count;
 			var tra,scl,w;
 
 			w = $(document).width();
@@ -329,7 +325,7 @@ $(document).ready(function(){
 
 			for(var i=0;i<=options.nrow;i++) {
 				idx = i*options.ncol+col;
-				idx <= options.count && heights.push(owner.eq(idx).height() + 30 + options.offsetY);
+				idx < options.count && heights.push(owner.eq(idx).height() + 30 + options.offsetY);
 			}
 
 			return heights;

@@ -183,3 +183,7 @@ aside a {
 	color:#CCC;
 	border:2px dashed #CCC;
 }
+
+.circle .new, .scroll .new {
+	display:none;
+}
