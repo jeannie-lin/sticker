@@ -45,8 +45,9 @@
 		copyright <time datetime="2014.4">2014</time>
 	</footer>
 </div>
-<script src="js/jquery-1.11.0.js"></script>
+<script src="/min/?b=sticker/js&f=jquery-1.11.0.js,transform.js,stick.js"></script>
+<!--script src="js/jquery-1.11.0.js"></script>
 <script src='js/transform.js'></script>
-<script src='js/stick.js'></script>
+<script src='js/stick.js'></script-->
 </body>
 </html>

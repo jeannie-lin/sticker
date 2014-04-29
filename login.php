@@ -43,10 +43,17 @@
 			copyright <time datetime="2014.4">2014</time>
 		</footer>
 	</div>
-<script src="js/jquery-1.11.0.js"></script>
-<script src="js/login.js"></script>
+<script src="/min/?b=sticker/js&f=jquery-1.11.0.js,login.js"></script>
+<!--script src="js/jquery-1.11.0.js"></script>
+<script src="js/login.js"></script-->
 <script>
-	$('#content').delegate('#login','click',function(){
+	$('#content').delegate('.text','keydown',function(ev){
+		if(ev.keyCode == 13) {
+			ev.preventDefault();
+			$('#login').click();
+		}
+	}).delegate('#login','click',function(){
+		console.info('test');
 		$.ajax({
 			url:'check.php',
 			type : 'post',

@@ -109,7 +109,7 @@ $(document).ready(function(){
 					return;
 				}
 
-				var val = $(this).html().replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+				var val = $(this).html().replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&');
 				$(this).after('<textarea id="edit" class="edit"></textarea>').hide().siblings('#edit').val(val).focus().end()
 
 			}).delegate('.edit','focus',function(){
@@ -129,7 +129,7 @@ $(document).ready(function(){
 					url:'update.php',
 					type:'post',
 					dataType:'json',
-					data:{data:$(this).val(),date:date(),id:p.attr('data-id')},
+					data:{data:$(this).val().replace(/</g,'&lt;').replace(/>/g,'&gt;'),date:date(),id:p.attr('data-id')},
 				}).done(function(data){
 					p.attr('data-id',data.id);
 					$(this).val(data.data).siblings('.date').html('--'+data.date);

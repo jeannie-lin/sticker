@@ -31,7 +31,7 @@
 					<span class="tip" id="nm-tip">4-30 charecters:a-z,A-Z,-,0-9!</span>
 					<label class="label" for="password">Password:</label>
 					<input class="text" id="password" name="password" type="password" maxlength="30">
-					<span class="tip" id="pwd-tip">4-30 charecters!</span>
+					<span class="tip op" id="pwd-tip">4-30 charecters!</span>
 					<span class="btns">
 						<input class="btn" id="regist" name="regist" type="button" value="Regist">
 						<input class="btn" id="cancel" name="cancel" type="button" value="Cancel" onclick="location.href='login.php';">
@@ -43,10 +43,16 @@
 			copyright <time datetime="2014.4">2014</time>
 		</footer>
 	</div>
-<script src="js/jquery-1.11.0.js"></script>
-<script src="js/login.js"></script>
+<script src="/min/?b=sticker/js&f=jquery-1.11.0.js,login.js"></script>
+<!--script src="js/jquery-1.11.0.js"></script>
+<script src="js/login.js"></script-->
 <script>
-	$('#content').delegate('#username','change',function(){
+	$('#content').delegate('.text','keydown',function(ev){
+		if(ev.keyCode == 13) {
+			ev.preventDefault();
+			$('#regist').click();
+		}
+	}).delegate('#username','change',function(){
 		$.ajax({
 			url:'check.php',
 			type : 'post',
