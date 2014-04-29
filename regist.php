@@ -11,6 +11,13 @@
 	<link rel="stylesheet" href="css/login.css"-->
 </head>
 <body>
+<!--[if IE]>
+	<div class="suggest">
+		<h1>Unsupported!</h1>
+		<p>Please use IE10+,Firefox,Chrome,Opera,Safari to use sticker system!</p>
+	</div>
+<![endif]-->
+<!--[if !IE]><!-->
 	<div class="wrap w">
 		<header>
 			<h1>Lovely Sticker</h1>
@@ -45,8 +52,6 @@
 <script src="/min/?b=sticker/js&f=jquery-1.11.0.js,regist.js"></script>
 <!--script src="js/jquery-1.11.0.js"></script>
 <script src="js/regist.js"></script-->
-<script>
-	
-</script>
+<!--<!--[endif]>-->
 </body>
 </html>

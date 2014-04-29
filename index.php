@@ -19,6 +19,13 @@
 	<link rel="stylesheet" href="css/stick.css"-->
 </head>
 <body>
+<!--[if IE]>
+	<div class="suggest">
+		<h1>Unsupported!</h1>
+		<p>Please use IE10+,Firefox,Chrome,Opera,Safari to use sticker system!</p>
+	</div>
+<![endif]-->
+<!--[if !IE]><!-->
 <div class="wrap w">
 	<header>
 		<ul class="menu justify">
@@ -50,5 +57,6 @@
 <!--script src="js/jquery-1.11.0.js"></script>
 <script src='js/transform.js'></script>
 <script src='js/stick.js'></script-->
+<!--<![endif]>-->
 </body>
 </html>

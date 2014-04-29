@@ -150,3 +150,15 @@ fieldset {
 	padding:164px 0 45px;
 	overflow:hidden;
 }
+
+.suggest {
+	width:60%;
+	height:60%;
+	margin:5% auto 0;
+	padding:5%;
+	line-height:2;
+	border:1px solid #AAA;
+	border-radius:5px;
+}
+.suggest h1 {font-size:45px;}
+.suggest p {font-size:30px;}
