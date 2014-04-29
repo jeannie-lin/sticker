@@ -47,7 +47,7 @@
 			if(!mysql_select_db($this->db,$this->con)){
 				$this->error("Invalid database:",$this->db);
 			}
-			mysql_query("SET NAMES 'utf8'");
+			mysql_query("SET NAMES 'utf-8'");
 		}
 
 		function close(){
