@@ -371,12 +371,13 @@ $(document).ready(function(){
 					dataType:'json',
 					data:{remove:true,id:p.attr('data-id')},
 				}).done(function(data){
+
+				}).fail(function(data){
+					//alert('failed to delete data!');
+				}).always(function(data){
 					$(options.selecter).eq(idx).remove();
 					options.count -= 1;
 					!options.container.hasClass('random') && onLayout(function(index){return index > idx-1});
-					
-				}).fail(function(data){
-					//alert('failed to delete data!');
 				})
 			})
 		}
