@@ -1,22 +1,20 @@
 $(document).ready(function(){
-	var fall = function(opts){
+	var sticker = function(opts){
 		var options = $.extend({
-				stage : '#stage',
-				container : '#container',
+				container : $('#container'),
 				top: 164,
 				bottom : 45,
 
-				owner : '.stick',
+				selecter : '.stick',
 				width : 220,
 				offsetX : 20,
 				offsetY : 15,
-
+			},opts,{
 				nrow : 0,
 				ncol : 0,
 				count : 0,
-				timer : [],
-
-			},opts);
+				timer : []
+			});
 
 
 		function date() {
@@ -24,76 +22,291 @@ $(document).ready(function(){
 			return time.getFullYear()+'.'+(time.getMonth()+1)+'.'+time.getDate();
 		}
 
-		function color() {
-			var clrs = ['#EEAAAA','#AAEEAA','#AAAAEE','#FFF3AF'];
-			var idx  = Math.round(100*Math.random()%clrs.length);
-
-			return clrs[idx];
-		}
-
 		function random(max,pos) {
-			var tmp = Math.round((100+max)*Math.random())%(max+1)
-			var idx = Math.round(100*Math.random())%2;
+			var tmp = Math.round((10+max)*Math.random())%(max+1)
+			var idx = Math.round(10*Math.random())%2;
 
 			return (pos || idx)? tmp : -tmp;
 		}
 
-		function top(index) {
-			var index = index || 0;
+		function top(idx) {
+			var idx = idx || 0;
 			var top = options.offsetY;
-			var owner = $(options.owner);
-			var nrow = Math.floor(index / options.ncol);
+			var els = $(options.selecter);
+			var row = Math.floor(idx / options.ncol);
 
-			index %= options.ncol;
+			idx %= options.ncol;
 
-			for(var r=0;r<nrow;r++) {
-				top += owner.get(r*options.ncol+index).clientHeight + options.offsetY;
+			for(var r=0;r<row;r++) {
+				top += els.get(r*options.ncol+idx).clientHeight + options.offsetY;
 			}
 
-			owner = null;
+			els = null;
 			return top;
 		}
 
-		function left(index) {
-			var nrow = Math.floor(index / options.ncol);
-			return (index - options.ncol * nrow )*(options.width+options.offsetX) + options.offsetX;
+		function left(idx) {
+			var row = Math.floor(idx / options.ncol);
+			return (idx - options.ncol * row )*(options.width+options.offsetX) + options.offsetX;
 		}
 
-		function conHeight() {
+		function height() {
 			var start = options.nrow * options.ncol;
 			var count = options.count % options.ncol + 1;
-			var heights = [parseInt($('body').height())-options.top - options.bottom];
-			var owner = $(options.owner);
-			var container = $(options.container);
-			var current;
+			var hts = [parseInt($('body').height())-options.top - options.bottom];
+			var els = $(options.selecter);
+			var cur;
 
 			for(var i=0;i<count;i++) {
-				current = owner.get(start+i);
-				current && heights.push(parseInt(current.style.top)+current.clientHeight + options.offsetY);
+				cur = els.get(start+i);
+				cur && hts.push(parseInt(cur.style.top)+cur.clientHeight + options.offsetY);
 			}
 
-			owner = container = current = null;
-			return Math.max.apply(null,heights);
+			els = cur = null;
+			return Math.max.apply(null,hts);
 		}
 
-		function conWidth() {
+		function width() {
 			return options.ncol  * (options.width+options.offsetX) + options.offsetX;
 		}
 
-		function bindEvents(){
-			$(document).delegate('.circle .stick','click',function(){
-				var deg = -360.0/options.count * $(this).index();
-				$('.circle').transform('rotateY',deg + 'deg');
+		/* Slide any column up/down */
+		function heights(col) {
+			var hts = [];
+			var els = $(options.selecter);
+			var idx,cur;
 
+			for(var i=0;i<=options.nrow;i++) {
+				idx = i*options.ncol+col;
+				cur = els.get(idx);
+				idx < options.count && (cur = els.get(idx),cur && hts.push(cur.clientHeight+options.offsetY));
+			}
+
+			els = idx = cur = null;
+			return hts;
+		}
+
+		function slide(col,hts,up) {
+			var idx;
+			var els = $(options.selecter);
+			var h = hts.reduce(function(pre,cur){return pre+cur;});
+			var f = up ? first() : last();
+
+			function first() {
+				var top = parseInt($(options.selecter).get(col).style.top);
+				var val = 0,l=hts.length-1;
+
+				if(top <= options.offsetY) {
+					return 0
+				}
+
+				for(var i=l;i>=0;i--) {
+					val += hts[i] + options.offsetY;
+					if (val >= top) {
+						return i
+					}
+				}
+
+				return 0
+			}
+
+			function last() {
+				var top = parseInt($(options.selecter).get(col).style.top);
+				var val = 0,l=hts.length-1;
+
+				if(top <= options.offsetY) {
+					return l
+				}
+
+				for(var i=l;i>=0;i--) {
+					val += hts[i] + options.offsetY;
+					if (val >= top) {
+						return (i < 1) ? l : i-1;
+					}
+				}
+
+				return l
+			}
+
+			function top(top) {
+				if (up) {
+					return (top > options.offsetY) ? top - hts[f] : h - hts[i] + options.offsetY
+				} else {
+					return (top + hts[f] < h) ? top + hts[f] : options.offsetY
+				}
+			}
+
+			for(i=0;i<=options.nrow;i++) {
+				idx = col+i*options.ncol;
+				if (idx > options.count)
+					break
+
+				els.eq(idx).css({'top':top(parseInt(els.get(idx).style.top))});
+			}
+
+			els = hts = h = idx = f = null;
+		}
+
+		function insert(data){
+			var html = '';
+
+			html += '<div class="stick bg'+random(3,1)+'" data-id="'+data.id+'"><p class="display">'+data.data+'</p> \
+						<p class="date">--'+data.date+'</p> \
+						<p class="close">X</p></div>'
+			options.container.append(html);
+		}
+
+		function repaint(idx) {
+			$(options.selecter).eq(idx).css({'top':top(idx)+'px','left':left(idx)+'px'});
+			options.container.css({height:height()+'px',width:width()+'px'});
+
+			if (options.container.hasClass('book')) {
+				var col = (idx % options.ncol) % 2;
+				$(options.selecter).eq(idx).transform('skewY',col == 0 ? '-35deg':'35deg')
+			}
+		}
+
+		function onLayout(filter) {
+			var filter = filter || function(){return true;}
+
+			options.ncol = Math.floor($('body').width() / (options.width + options.offsetX));
+			options.nrow = Math.floor($('#new').index()/options.ncol);
+
+			$(options.selecter).filter(filter).each(function(){
+				repaint($(this).index());
 			})
+		}
 
-			$(options.container).delegate('#new','click',function(){
+		function onReset() {
+			unScroll();
+			options.container.removeClass('circle book scroll random').transform('none').find(options.selecter).transform('none');
+			onLayout();
+		}
+
+		function onRandom() {
+			if (options.container.hasClass('circle')) {
+				onReset()
+			} else {
+				unScroll();
+				options.container.removeClass('book scroll')
+			}
+			$(options.container).addClass('random')
+			$(options.selecter).transform('skewY','none').each(function(){
+				$(this).css({
+					left:random(options.container.width()-$(this).width()-options.offsetX,1),
+					top:random(options.container.height()-$(this).height()-options.offsetY,1)
+				});
+			})
+		}
+
+		function onRotate() {
+			if (options.container.hasClass('circle')) {
+				onReset()
+			} else {
+				unScroll();
+				options.container.removeClass('book scroll')
+			}
+			
+			$(options.selecter).transform('skewY','none').each(function(){
+				$(this).transform('rotate',random(32)+'deg')
+			})
+		}
+
+		function onCircle() {
+			var deg = 360.0/options.count;
+			var tra,scl;
+
+			unScroll();
+			tra = (options.width)/2/Math.tan(deg/360 * Math.PI);
+			tra >0 && (scl=$('body').width()/3.5/(tra)) || (tra = 0,scl=1.5);
+			scl > 1 && (scl = 1)
+			tra = tra * scl + 20;
+
+			options.container.removeClass('book scroll random').addClass('circle').css({height:0,width:'220px'}).find(options.selecter).css({
+				top:'0',
+				left:'0'
+			}).transform('none').each(function(){
 				var idx = $(this).index();
-				$(this).before('<div class="stick"><p class="display"></p> \
+				$(this).transform('rotateY',idx*deg + 'deg')}).transform('scale',scl+'',scl+'').transform('translateZ',tra + 'px')
+		}
+
+		function onBook() {
+			onReset();
+			options.container.addClass('book').find(options.selecter).each(function(){
+				var col = ($(this).index() % options.ncol) % 2;
+				$(this).transform('skewY',col == 0 ? '-35deg':'35deg')
+			});
+
+		}
+
+		function unScroll() {
+			options.timer.map(function(v,i,arr){
+				clearInterval(v);
+			})
+			options.timer = [];
+		}
+
+		function onScroll() {
+			var t,hts;
+
+			if (options.container.hasClass('scroll')) {
+				return;
+			}
+
+			onReset();
+			options.container.addClass('scroll');
+
+			for(var i=0;i<options.ncol;i++) {
+				if (i >= options.count - 1)
+					break;
+
+				hts = heights(i);
+				t = setInterval(function(i,hts,up) {
+					return function() {
+						slide(i,hts,up)
+					}
+				}(i,hts,random(1,1)), 2500+random(1000));
+
+				options.timer.push(t);
+			}
+		}
+
+		function onShake() {
+			$(options.selecter).each(function(){
+				var idx = $(this).index()%5;
+				var cnt = 0;
+
+				for(var i=0;i<30;i++) {
+					setTimeout(function(){
+						$(this).transform('translate3d',random(50)+'px',random(50)+'px','0')
+					}.bind(this),i*80)
+				}
+
+				setTimeout(function(){
+					$(this).transform('translate3d','0','0','0')
+				}.bind(this),30*80)
+			})
+		}
+
+		function bindEvents(){
+			$(window).on('resize',function(){
+				if (!options.container.hasClass('circle')) {
+					onLayout();
+				} else {
+					onCircle();
+				}
+			});
+			options.container.delegate('.stick','click',function(){
+				if(options.container.hasClass('circle')){
+					var deg = -360.0/options.count * $(this).index();
+					options.container.transform('rotateY',deg + 'deg');
+				}
+			}).delegate('#new','click',function(){
+				var idx = $(this).index();
+				$(this).before('<div class="stick bg'+random(3,1)+'"><p class="display"></p> \
 				<p class="date">--'+date()+'</p> \
 				<p class="close">X</p></div>');
 
-				$(options.owner).eq(idx).css({'background-color':color()});
 				options.nrow = Math.floor(idx/options.ncol);
 				options.count += 1;
 				repaint(idx);
@@ -101,7 +314,7 @@ $(document).ready(function(){
 				repaint(idx+1);
 
 			}).delegate('.display','click',function(){
-				if ($(options.container).hasClass('scroll') || $(options.container).hasClass('circle')) {
+				if (options.container.hasClass('scroll') || options.container.hasClass('circle')) {
 					return;
 				}
 
@@ -138,7 +351,7 @@ $(document).ready(function(){
 				var idx = $(this.parentNode).index();
 
 				$(this).siblings('.display').html(val).show().end().remove();
-				!$(options.container).hasClass('random') && layout(function(index){
+				!options.container.hasClass('random') && onLayout(function(index){
 					return index >= idx && (idx % options.ncol === index % options.ncol);
 				})
 
@@ -155,9 +368,9 @@ $(document).ready(function(){
 					dataType:'json',
 					data:{remove:true,id:p.attr('data-id')},
 				}).done(function(data){
-					$(options.owner).eq(idx).remove();
+					$(options.selecter).eq(idx).remove();
 					options.count -= 1;
-					!$(options.container).hasClass('random') && layout(function(index){return index > idx-1});
+					!options.container.hasClass('random') && onLayout(function(index){return index > idx-1});
 					
 				}).fail(function(data){
 					alert('failed to remove!');
@@ -165,20 +378,9 @@ $(document).ready(function(){
 			})
 		}
 
-		function insert(data,index){
-			var html = '';
-			var index = index || 0;
-
-			html += '<div class="stick" data-id="'+data.id+'"><p class="display">'+data.data+'</p> \
-						<p class="date">--'+data.date+'</p> \
-						<p class="close">X</p></div>'
-			$(options.container).append(html);
-			$(options.owner).eq(index).css({'background-color':color()});
-		}
-
 		function init() {
 			$.ajax({
-				url:'load.php?',
+				url:'load.php',
 				type:'get',
 				dataType:'json'
 			}).done(function(data){
@@ -187,226 +389,11 @@ $(document).ready(function(){
 					options.count += 1;
 				}
 
-				$(options.container).append('<div class="stick new" id="new"></div>');
-				layout();
+				options.container.append('<div class="stick new" id="new"></div>');
+				onLayout();
 			}).fail(function(data){
-				$(options.container).append('<div class="stick new" id="new"></div>');
-				layout();
-			})
-		}
-
-		function clearTimer() {
-			options.timer.map(function(v,i,arr){
-				clearInterval(v);
-			})
-			options.timer = [];
-		}
-
-		function repaint(idx) {
-			$(options.owner).eq(idx).css({'top':top(idx)+'px','left':left(idx)+'px'});
-			$(options.stage).css({height:conHeight()+'px',width:conWidth()+'px'});
-
-			if ($(options.container).hasClass('book')) {
-				var col = (idx % options.ncol) % 2;
-				$(options.owner).eq(idx).transform('skewY',col == 0 ? '-35deg':'35deg')
-			}
-		}
-
-		function layout(filter) {
-			var filter = filter || function(){return true;}
-
-			options.ncol = Math.floor($('body').width() / (options.width + options.offsetX));
-			options.nrow = Math.floor($('#new').index()/options.ncol);
-
-			$(options.owner).filter(filter).each(function(){
-				repaint($(this).index());
-			})
-		}
-
-		function removeCircle() {
-			$(options.container).removeClass('circle').transform('translate3d','none').transform('rotateY','none')
-		}
-
-		function reset() {
-			clearTimer();
-			removeCircle();
-			$(options.container).removeClass('circle book scroll random')
-			$(options.owner).transform('none')
-			layout();
-		}
-
-		function onRandom() {
-			if ($('.circle').length) {
-				reset()
-			} else {
-				clearTimer();
-				removeCircle();
-				$(options.container).removeClass('book scroll')
-			}
-			$(options.container).addClass('random')
-			$(options.owner).transform('skewY','none').each(function(){
-				var p = $(options.stage);
-				$(this).css({
-					left:random(p.width()-$(this).width()-options.offsetX,1),
-					top:random(p.height()-$(this).height()-options.offsetY,1)
-				});
-			})
-		}
-
-		function rotate() {
-			if ($('.circle').length) {
-				reset()
-			} else {
-				clearTimer();
-				removeCircle();
-				$(options.container).removeClass('book scroll')
-			}
-			
-			$(options.owner).transform('skewY','none').each(function(){
-				$(this).transform('rotate',random(32)+'deg')
-			})
-		}
-
-		function circle() {
-			var deg = 360.0/options.count;
-			var tra,scl,w;
-
-			w = $(document).width();
-			tra = (options.width)/2/Math.tan(deg/360 * Math.PI);
-			tra >0 && (scl=w/3.5/(tra)) || (tra = 0,scl=1.5);
-			scl > 1 && (scl = 1)
-			tra = tra * scl + 30;
-
-			clearTimer();
-			$(options.stage).css({height:0,width:w});
-			$(options.container).removeClass('book scroll random').addClass('circle');
-			$(options.owner).css({top:'0',left:'0'}).transform('none').each(function(){
-				var idx = $(this).index();
-				$(this).transform('rotateY',idx*deg + 'deg')}).transform('scale',scl+'',scl+'').transform('translate3d','0,0,'+tra + 'px')
-		}
-
-		function book() {
-			reset();
-			$(options.container).addClass('book').find(options.owner).each(function(){
-				var col = ($(this).index() % options.ncol) % 2;
-				$(this).transform('skewY',col == 0 ? '-35deg':'35deg')
-			});
-
-		}
-
-		function scroll() {
-			var t;
-
-			if ($(options.container).hasClass('scroll')) {
-				return;
-			}
-
-			reset();
-			$(options.container).addClass('scroll');
-
-			for(var i=0;i<options.ncol;i++) {
-				if (i >= options.count - 1)
-					break;
-
-				t = setInterval(function(i,up) {
-					return function() {
-						slide(i,up)
-					}
-				}(i,random(1,1)), 2500+random(1000));
-
-				options.timer.push(t);
-			}
-		}
-
-		function heights(col) {
-			var heights = [];
-			var owner = $(options.owner);
-			var idx;
-
-			for(var i=0;i<=options.nrow;i++) {
-				idx = i*options.ncol+col;
-				idx < options.count && heights.push(owner.eq(idx).height() + 30 + options.offsetY);
-			}
-
-			return heights;
-		}
-
-		function slide(col,up) {
-			var idx;
-			var owner = $(options.owner);
-			var hs = heights(col);
-			var h = hs.reduce(function(pre,cur){return pre+cur;});
-			var f = up ? first() : last();
-
-			function first() {
-				var top = parseInt($(options.owner).get(col).style.top);
-				var val = 0,l=hs.length-1;
-
-				if(top <= options.offsetY) {
-					return 0
-				}
-
-				for(var i=l;i>=0;i--) {
-					val += hs[i] + options.offsetY;
-					if (val >= top) {
-						return i
-					}
-				}
-
-				return 0
-			}
-
-			function last() {
-				var top = parseInt($(options.owner).get(col).style.top);
-				var val = 0,l=hs.length-1;
-
-				if(top <= options.offsetY) {
-					return l
-				}
-
-				for(var i=l;i>=0;i--) {
-					val += hs[i] + options.offsetY;
-					if (val >= top) {
-						return (i < 1) ? l : i-1;
-					}
-				}
-
-				return l
-			}
-
-			function top(top) {
-				if (up) {
-					return (top > options.offsetY) ? top - hs[f] : h - hs[i] + options.offsetY
-				} else {
-					return (top + hs[f] < h) ? top + hs[f] : options.offsetY
-				}
-			}
-
-			for(i=0;i<=options.nrow;i++) {
-				idx = col+i*options.ncol;
-				if (idx > options.count)
-					break
-
-				owner.eq(idx).css({'top':top(parseInt(owner.get(idx).style.top))});
-			}
-
-			owner = hs = h = idx = f = null;
-		}
-
-		function shake() {
-			$(options.owner).each(function(){
-				var idx = $(this).index()%5;
-				var cnt = 0;
-
-				for(var i=0;i<30;i++) {
-					setTimeout(function(){
-						$(this).transform('translate3d',random(50)+'px',random(50)+'px','0')
-					}.bind(this),i*80)
-				}
-
-				setTimeout(function(){
-					$(this).transform('translate3d','0','0','0')
-				}.bind(this),30*80)
+				options.container.append('<div class="stick new" id="new"></div>');
+				onLayout();
 			})
 		}
 
@@ -414,32 +401,59 @@ $(document).ready(function(){
 		bindEvents();
 
 		return {
-			layout: layout,
-			reset: reset,
-			rotate : rotate,
+			reset: onReset,
+			rotate : onRotate,
 			random :onRandom,
-			book : book,
-			scroll : scroll,
-			circle : circle,
-			shake : shake
+			book : onBook,
+			scroll : onScroll,
+			circle : onCircle,
+			shake : onShake
 		}
 
-	}();
-
-	$('#rotate').click(fall.rotate);
-	$('#reset').click(fall.reset);
-	$('#random').click(fall.random);
-	$('#shake').click(fall.shake);
-	$('#circle').click(fall.circle);
-	$('#book').click(fall.book);
-	$('#scroll').click(fall.scroll);
-
-	window.onresize = function() {
-		if (!$('#container').hasClass('circle')) {
-			fall.layout();
-		} else {
-			fall.circle();
-		}
-			
 	};
+
+	$.fn.sticker = function(opts,ctrls){
+		var s = sticker($.extend({
+			selecter:'.stick',
+			width:220,
+			offsetX:15,
+			offsetY:20
+		},{
+			container:this
+		}));
+		var ctrls = $.extend({
+			reset:'',
+			rotate:'',
+			random:'',
+			circle:'',
+			scroll:'',
+			book:'',
+			shake:''
+		},ctrls);
+
+		ctrls.reset && $(ctrls.reset).click(s.reset);
+		ctrls.rotate && $(ctrls.rotate).click(s.rotate);
+		ctrls.random && $(ctrls.random).click(s.random);
+		ctrls.circle && $(ctrls.circle).click(s.circle);
+		ctrls.scroll && $(ctrls.scroll).click(s.scroll);
+		ctrls.book && $(ctrls.book).click(s.book);
+		ctrls.shake && $(ctrls.shake).click(s.shake);
+
+		return this;
+	}
+
+	$('#container').sticker({
+		selecter:'.stick',
+		width:220,
+		offsetX:15,
+		offsetY:20
+	},{
+		reset:'#reset',
+		rotate:'#rotate',
+		random:'#random',
+		circle:'#circle',
+		scroll:'#scroll',
+		book:'#book',
+		shake:'#shake'
+	})
 })

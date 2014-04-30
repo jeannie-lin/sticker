@@ -54,6 +54,7 @@ aside a {
 
 .container {
 	position:relative;
+	margin:0 auto;
 	z-index:2;
 }
 
@@ -78,10 +79,15 @@ aside a {
 	min-height:230px;
 	padding:15px;
 	text-align: left;
-	background:#EEAAAA;
 	box-shadow:3px 3px 10px rgba(0,0,0,0.3);
 	transition:all .5s;
 }
+.bg0 {background-color:#EEAAAA}
+.bg1 {background-color:#AAEEAA;}
+.bg2 {background-color:#AAAAEE;}
+.bg3 {background-color:#FFF3AF;}
+
+
 .stick:hover {z-index:1;}
 .stick .close {
 	display:block;
@@ -166,7 +172,7 @@ aside a {
 	left:20px;
 	top:15px;
 	text-align:center;
-	background:#E0E0E0;
+	background-color:#E0E0E0;
 	cursor:pointer;
 }
 .new:after {
