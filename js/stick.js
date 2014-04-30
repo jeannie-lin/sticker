@@ -343,7 +343,7 @@ $(document).ready(function(){
 					p.attr('data-id',data.id);
 					$(this).val(data.data).siblings('.date').html('--'+data.date);
 				}).fail(function(data){
-					alert('failed to update data!');
+					//alert('failed to update data!');
 				})
 
 			}).delegate('.edit','blur',function(){
@@ -373,7 +373,7 @@ $(document).ready(function(){
 					!options.container.hasClass('random') && onLayout(function(index){return index > idx-1});
 					
 				}).fail(function(data){
-					alert('failed to delete data!');
+					//alert('failed to delete data!');
 				})
 			})
 		}
