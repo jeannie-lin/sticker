@@ -37,7 +37,7 @@
 .mn-md {width:100px;height:100px;line-height:100px;}
 .mn-lg {width:120px;height:120px;line-height:120px;}
 
-.justify {text-align:justify;font-size:1px;/*font-size:0;*/}
+.justify {text-align:justify;font-size:1px;line-height:0;/*font-size:0;*/}
 .justify:after {
 	display:inline-block;
 	width:100%;
@@ -146,8 +146,8 @@ fieldset {
 	-moz-box-sizing:border-box;
 	width:100%;
 	min-height:100%;
-	margin: -164px auto -45px;
-	padding:164px 0 45px;
+	margin: -168px auto -45px;
+	padding:168px 0 45px;
 	overflow:hidden;
 }
 

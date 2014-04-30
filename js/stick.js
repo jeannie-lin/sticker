@@ -2,7 +2,7 @@ $(document).ready(function(){
 	var sticker = function(opts){
 		var options = $.extend({
 				container : $('#container'),
-				top: 164,
+				top: 168,
 				bottom : 45,
 
 				selecter : '.stick',
@@ -153,7 +153,7 @@ $(document).ready(function(){
 			html += '<div class="stick bg'+random(3,1)+'" data-id="'+data.id+'"><p class="display">'+data.data+'</p> \
 						<p class="date">--'+data.date+'</p> \
 						<p class="close">X</p></div>'
-			options.container.append(html);
+			options.container.find('#new').before(html);
 		}
 
 		function repaint(idx) {
@@ -379,6 +379,9 @@ $(document).ready(function(){
 		}
 
 		function init() {
+			options.container.append('<div class="stick new" id="new"></div>');
+			onLayout();
+
 			$.ajax({
 				url:'load.php',
 				type:'get',
@@ -389,11 +392,9 @@ $(document).ready(function(){
 					options.count += 1;
 				}
 
-				options.container.append('<div class="stick new" id="new"></div>');
 				onLayout();
 			}).fail(function(data){
-				options.container.append('<div class="stick new" id="new"></div>');
-				onLayout();
+
 			})
 		}
 
