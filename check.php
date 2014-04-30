@@ -15,10 +15,10 @@
 
 	function login($name,$password) {
 		$out = array('name'=>'','password'=>'','match'=>false);
-		if(!valid($name,4,30)) {
-			$out['name'] = "4-30 charactors:a-z,A-Z,-,0-9!";
-		} else if(!valid($password,4,30,0)) {
-			$out['password'] = "4-30 charactors!";
+		if(!valid($name,5,30)) {
+			$out['name'] = "5-30 charactors:a-z,A-Z,-,0-9!";
+		} else if(!valid($password,5,30,0)) {
+			$out['password'] = "5-30 charactors!";
 		} else {
 			$password = $password ? md5($password) : '';
 			$row = search($name,$password);
@@ -36,12 +36,12 @@
 	function regist($name,$password) {
 		$out = array('name'=>'','password'=>'','match'=>false);
 
-		if(!valid($name,4,30)) {
-			$out['name'] = "4-30 charactors:a-z,A-Z,-,0-9!";
+		if(!valid($name,5,30)) {
+			$out['name'] = "5-30 charactors:a-z,A-Z,-,0-9!";
 		} else if(search($name)){
 			$out['name'] = "User $name already existed!";
-		} else if(!valid($password,4,30,0)) {
-			$out['password'] = "4-30 charactors!";
+		} else if(!valid($password,5,30,0)) {
+			$out['password'] = "5-30 charactors!";
 		} else {
 			insert($name,$password);
 			$out['match'] = true;
@@ -70,15 +70,15 @@
 			$out = array('value'=>'');
 
 			if ($log && !$flag) {
-				if(!valid($name,4,30)) {
-					$out['value'] = "4-30 charactors:a-z,A-Z,-,0-9!";
+				if(!valid($name,5,30)) {
+					$out['value'] = "5-30 charactors:a-z,A-Z,-,0-9!";
 				} else if(!search($name)){
 					$out['value'] = "Can not find user $name!";
 				}
 
 			} else if ($log && $flag) {
-				if(!valid($password,4,30,0)) {
-					$out['value'] = '4-30 charactors!';
+				if(!valid($password,5,30,0)) {
+					$out['value'] = '5-30 charactors!';
 				} else {
 					$row = search($name);
 					$password = $password ? md5($password) : '';
@@ -88,14 +88,14 @@
 				}
 
 			} else if (!$log && !$flag) {
-				if(!valid($name,4,30)) {
-					$out['value'] = "4-30 charactors:a-z,A-Z,-,0-9!";
+				if(!valid($name,5,30)) {
+					$out['value'] = "5-30 charactors:a-z,A-Z,-,0-9!";
 				} else if(search($name)){
 					$out['value'] = "User $name already existed!";
 				}
 
-			} else if (!$log && $flag && !valid($password,4,30,0)) {
-				$out['value'] = '4-30 charactors!';
+			} else if (!$log && $flag && !valid($password,5,30,0)) {
+				$out['value'] = '5-30 charactors!';
 			}
 			echo  json_encode($out);
 		}

@@ -35,10 +35,10 @@
 			<fieldset>
 				<label class="label" for="username">Username:</label>
 				<input class="text" id="username" name="username" type="text" maxlength="30" placeholder="any" autofocus>
-				<span class="tip ibk w tr fs14" id="nm-tip">4-30 charecters:a-z,A-Z,-,0-9!</span>
+				<span class="tip ibk w tr fs14" id="nm-tip">5-30 charecters:a-z,A-Z,-,0-9!</span>
 				<label class="label" for="password">Password:</label>
 				<input class="text" id="password" name="password" type="password" maxlength="30">
-				<span class="tip  ibk w tr fs14 op0" id="pwd-tip">4-30 charecters!</span>
+				<span class="tip  ibk w tr fs14 op0" id="pwd-tip">5-30 charecters!</span>
 				<span class="ibk w tr fs0">
 					<input class="btn" id="login" name="login" type="button" value="Login">
 					<input class="btn" id="regist" name="regist" type="button" value="Regist" onclick="location.href='regist.php'">

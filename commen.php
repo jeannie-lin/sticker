@@ -14,8 +14,8 @@
 		return true;
 	}
 
-	function valid($str,$min=4,$max=30,$wrd = 1) {
-		$reg = $wrd ? "/^\w{4,30}$/" : "/^.{4,30}$/";
+	function valid($str,$min=5,$max=30,$wrd = 1) {
+		$reg = $wrd ? "/^\w{5,30}$/" : "/^.{5,30}$/";
 		return preg_match($reg, $str);
 	}
 
