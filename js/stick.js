@@ -31,7 +31,7 @@ $(document).ready(function(){
 
 		function top(idx) {
 			var idx = idx || 0;
-			var top = options.offsetY;
+			var top = 0;
 			var els = $(options.selecter);
 			var row = Math.floor(idx / options.ncol);
 
@@ -47,7 +47,7 @@ $(document).ready(function(){
 
 		function left(idx) {
 			var row = Math.floor(idx / options.ncol);
-			return (idx - options.ncol * row )*(options.width+options.offsetX) + options.offsetX;
+			return (idx - options.ncol * row )*(options.width+options.offsetX);
 		}
 
 		function height() {
@@ -67,7 +67,7 @@ $(document).ready(function(){
 		}
 
 		function width() {
-			return options.ncol  * (options.width+options.offsetX) + options.offsetX;
+			return options.ncol * options.width + (options.ncol-1)*options.offsetX;
 		}
 
 		/* Slide any column up/down */
@@ -96,12 +96,12 @@ $(document).ready(function(){
 				var top = parseInt($(options.selecter).get(col).style.top);
 				var val = 0,l=hts.length-1;
 
-				if(top <= options.offsetY) {
+				if(top <= 0) {
 					return 0
 				}
 
 				for(var i=l;i>=0;i--) {
-					val += hts[i] + options.offsetY;
+					val += hts[i];
 					if (val >= top) {
 						return i
 					}
@@ -114,12 +114,12 @@ $(document).ready(function(){
 				var top = parseInt($(options.selecter).get(col).style.top);
 				var val = 0,l=hts.length-1;
 
-				if(top <= options.offsetY) {
+				if(top <= 0) {
 					return l
 				}
 
 				for(var i=l;i>=0;i--) {
-					val += hts[i] + options.offsetY;
+					val += hts[i];
 					if (val >= top) {
 						return (i < 1) ? l : i-1;
 					}
@@ -130,9 +130,9 @@ $(document).ready(function(){
 
 			function top(top) {
 				if (up) {
-					return (top > options.offsetY) ? top - hts[f] : h - hts[i] + options.offsetY
+					return (top > 0) ? top - hts[f] : h - hts[i];
 				} else {
-					return (top + hts[f] < h) ? top + hts[f] : options.offsetY
+					return (top + hts[f] < h) ? top + hts[f] : 0;
 				}
 			}
 
@@ -193,8 +193,8 @@ $(document).ready(function(){
 			$(options.container).addClass('random')
 			$(options.selecter).transform('skewY','none').each(function(){
 				$(this).css({
-					left:random(options.container.width()-$(this).width()-options.offsetX,1),
-					top:random(options.container.height()-$(this).height()-options.offsetY,1)
+					left:random(options.container.width()-this.clientWidth,1),
+					top:random(options.container.height()-this.clientHeight,1)
 				});
 			})
 		}
@@ -222,7 +222,10 @@ $(document).ready(function(){
 			scl > 1 && (scl = 1)
 			tra = tra * scl + 20;
 
-			options.container.removeClass('book scroll random').addClass('circle').css({height:0,width:'220px'}).find(options.selecter).css({
+			options.container.removeClass('book scroll random').addClass('circle').css({
+				height:'0',
+				width:'220px'
+			}).find(options.selecter).css({
 				top:'0',
 				left:'0'
 			}).transform('none').each(function(){
@@ -418,7 +421,7 @@ $(document).ready(function(){
 			selecter:'.stick',
 			width:220,
 			offsetX:15,
-			offsetY:20
+			offsetY:15
 		},{
 			container:this
 		}));
@@ -447,7 +450,7 @@ $(document).ready(function(){
 		selecter:'.stick',
 		width:220,
 		offsetX:15,
-		offsetY:20
+		offsetY:15
 	},{
 		reset:'#reset',
 		rotate:'#rotate',
