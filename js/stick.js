@@ -274,7 +274,7 @@ $(document).ready(function(){
 			w = $(document).width();
 			tra = (options.width)/2/Math.tan(deg/360 * Math.PI);
 			tra >0 && (scl=w/3.5/(tra)) || (tra = 0,scl=1.5);
-			scl > 1.6 && (scl = 1.5)
+			scl > 1 && (scl = 1)
 			tra = tra * scl + 30;
 
 			clearTimer();
