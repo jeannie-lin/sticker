@@ -3,7 +3,7 @@
 	session_start();
 
 	function insert($name,$password){
-		$name = addslashes($password);
+		$name = addslashes($name);
 		$password = $password ? md5($password) : '';
 
 		$sql = new mySql();
