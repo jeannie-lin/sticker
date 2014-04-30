@@ -100,8 +100,7 @@
 		}
 
 		function error($key,$val){
-			echo $key;
-			echo $val;
+			die("$key $val");
 		}
 	}
 ?>

@@ -33,7 +33,7 @@ $(document).ready(function(){
 				}
 			}
 		}).fail(function(data){
-			alert('Can not check data from ajax!');
+			alert('Login failed!');
 		})
 	}).delegate('#username','change',function(){
 		$.ajax({
@@ -53,7 +53,7 @@ $(document).ready(function(){
 				$('#pwd-tip').css('opacity','1');
 			}
 		}).fail(function(data){
-			alert('Can not check data from ajax!');
+
 		})
 	}).delegate('#password','change',function(){
 		$.ajax({
@@ -72,7 +72,7 @@ $(document).ready(function(){
 				$('#pwd-tip').html('');
 			}
 		}).fail(function(data){
-			alert('Can not check data from ajax!');
+
 		})
 	})
 })

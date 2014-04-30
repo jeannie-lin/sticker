@@ -21,8 +21,8 @@ $(document).ready(function(){
 				$('#nm-tip').html('Valid name').css('color','green');
 				$('#pwd-tip').css('opacity','1');
 			}
-		}).fail(function(data){
-			alert('Can not check data from ajax!');
+		}).fail(function(xhr,status,error){
+
 		})
 	}).delegate('#password','change',function(){
 		$.ajax({
@@ -41,7 +41,7 @@ $(document).ready(function(){
 				$('#pwd-tip').html('');
 			}
 		}).fail(function(data){
-			alert('Can not check data from ajax!');
+
 		})
 	}).delegate('#regist','click',function(){
 		$.ajax({
@@ -70,8 +70,8 @@ $(document).ready(function(){
 					$('#pwd-tip').html('Valid password').css('color','green');
 				}
 			}
-		}).fail(function(data){
-			alert('Can not check data from ajax!');
+		}).fail(function(xhr,staus,error){
+			alert('Regist failed !');
 		})
 	});
 })
