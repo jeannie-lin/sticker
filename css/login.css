@@ -13,6 +13,7 @@ fieldset {
 	margin:60px auto 0;
 	text-align:justify;
 	font-size:1px;
+	line-height:0;
 }
 
 .label {
@@ -35,7 +36,7 @@ fieldset {
 	.text {width:100%;}
 }
 
-.tip {height:25px;color:red;}
+.tip {height:25px;line-height:25px;color:red;}
 .btn {margin:5px 0 0 5px;min-width:30%;font-size:24px;cursor:pointer;}
 
 .stick {
