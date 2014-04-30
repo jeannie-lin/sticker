@@ -10,6 +10,7 @@ html {
 }
 body {
 	font-family:Georgia;
+	font-family:Georgia, serif;
 	font-size:20px;
 	line-height:1.5;
 	background-color:#ECECEC;
