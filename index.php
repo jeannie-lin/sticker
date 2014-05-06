@@ -13,10 +13,9 @@
 	<title>Lovely Sticker</title>
 	<meta name="keywords" content="Lovely Sticker">
 	<meta name="description" content="">
-	<link rel="stylesheet" href="/min/?b=sticker/css&f=reset.css,commen.css,stick.css">
-	<!--link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/commen.css">
-	<link rel="stylesheet" href="css/stick.css"-->
+	<link rel="stylesheet" href="css/stick.css">
 </head>
 <body>
 <!--[if IE]>
@@ -53,10 +52,9 @@
 		copyright <time datetime="2014.4">2014</time>
 	</footer>
 </div>
-<script src="/min/?b=sticker/js&f=jquery-1.11.0.js,transform.js,stick.js"></script>
-<!--script src="js/jquery-1.11.0.js"></script>
+<script src="js/jquery-1.11.0.js"></script>
 <script src='js/transform.js'></script>
-<script src='js/stick.js'></script-->
+<script src='js/stick.js'></script>
 <!--<![endif]>-->
 </body>
 </html>

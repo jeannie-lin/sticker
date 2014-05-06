@@ -5,9 +5,9 @@
 	<title>Lovely Sticker</title>
 	<meta name="keywords" content="Lovely Sticker">
 	<meta name="description" content="">
-	<!--link rel="stylesheet" href="css/reset.css">
+	<link rel="stylesheet" href="css/reset.css">
 	<link rel="stylesheet" href="css/commen.css">
-	<link rel="stylesheet" href="css/login.css"-->
+	<link rel="stylesheet" href="css/login.css">
 </head>
 <body>
 <!--[if IE]>
@@ -48,9 +48,8 @@
 			copyright <time datetime="2014.4">2014</time>
 		</footer>
 	</div>
-<script src="/min/?b=sticker/js&f=jquery-1.11.0.js,login.js"></script>
-<!--script src="js/jquery-1.11.0.js"></script>
-<script src="js/login.js"></script-->
+<script src="js/jquery-1.11.0.js"></script>
+<script src="js/login.js"></script>
 <!--<![endif]>-->
 </body>
 </html>
